@@ -6,14 +6,25 @@ public class User {
     private String username;
     private String fullname;
     private String imageurl;
-    public User(String id, String username, String fullname,String imageurl) {
+    private String bio;
+
+    public User(String id, String username, String fullname, String imageurl, String bio) {
         this.id = id;
         this.username = username;
         this.fullname = fullname;
         this.imageurl = imageurl;
+        this.bio = bio;
     }
 
     public User() {
+    }
+
+    public String getBio() {
+        return bio;
+    }
+
+    public void setBio(String bio) {
+        this.bio = bio;
     }
 
     public String getId() {

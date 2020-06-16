@@ -126,9 +126,10 @@ public class PostActivity extends AppCompatActivity {
 
                         DatabaseReference reference = FirebaseDatabase.getInstance().getReference("Posts");
 
-                        String postId = reference.push().getKey();
+                        String postid = reference.push().getKey();
 
                         HashMap<String,Object> hashMap = new HashMap<>();
+                        hashMap.put("postid",postid);
                         hashMap.put("author",author.getText().toString());
                         hashMap.put("edition",edition.getText().toString());
                         hashMap.put("numOfPages",numOfPages.getText().toString());
@@ -138,7 +139,7 @@ public class PostActivity extends AppCompatActivity {
                         hashMap.put("title",title.getText().toString());
 
 
-                        reference.child(postId).setValue(hashMap);
+                        reference.child(postid).setValue(hashMap);
                         //if process is successful than go to feed activity(home fragment)
 
                         startActivity(new Intent(PostActivity.this,MainActivity.class));

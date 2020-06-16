@@ -1,6 +1,7 @@
 package com.loory.unibook.Adapter;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -8,6 +9,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.fragment.app.FragmentActivity;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
@@ -19,6 +21,8 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.loory.unibook.Fragment.PostDetailFragment;
+import com.loory.unibook.Fragment.ProfileFragment;
 import com.loory.unibook.Model.Post;
 import com.loory.unibook.Model.User;
 import com.loory.unibook.R;
@@ -32,21 +36,20 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder>{
 
     private FirebaseUser firebaseUser;
 
-    public PostAdapter(Context mContext, List<Post> mPost) {
-        this.mContext = mContext;
-        this.mPost = mPost;
+    public PostAdapter(Context context, List<Post> posts) {
+        this.mContext = context;
+        this.mPost = posts;
     }
 
     @NonNull
     @Override
-    public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        LayoutInflater layoutInflater = LayoutInflater.from(parent.getContext());
-        View view = layoutInflater.inflate(R.layout.post_item,parent,false);
-        return new ViewHolder(view);
+    public PostAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        View view = LayoutInflater.from(mContext).inflate(R.layout.post_item, parent, false);
+        return new PostAdapter.ViewHolder(view);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull final PostAdapter.ViewHolder holder, int position) {
         firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
         final Post post = mPost.get(position);
 
@@ -70,6 +73,52 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder>{
         holder.edition.setText(post.getEdition());
 
         publisherInfo(holder.image_profile,holder.username,post.getPublisher());
+        isSaved(post.getPostid(),holder.save);
+
+
+        holder.save.setOnClickListener(new View.OnClickListener() {
+
+            //burada "save" yerine bookmark da yabilirsin hata alirsan
+            @Override
+            public void onClick(View v) {
+                //save'le
+                if(holder.save.getTag().equals("save")){
+                    FirebaseDatabase.getInstance().getReference().child("Saves").child(firebaseUser.getUid())
+                            .child(post.getPostid()) .setValue(true);
+                //ya da save'den cikar
+                }else{
+                    FirebaseDatabase.getInstance().getReference().child("Saves").child(firebaseUser.getUid())
+                            .child(post.getPostid()).removeValue();
+                }
+            }
+        });
+
+        holder.image_profile.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                SharedPreferences.Editor editor = mContext.getSharedPreferences("PREFS",Context.MODE_PRIVATE).edit();
+                editor.putString("profileid",post.getPublisher());
+                editor.apply();
+
+                ( (FragmentActivity)mContext).getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container
+                ,new ProfileFragment()).commit();
+            }
+        });
+
+        holder.username.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                SharedPreferences.Editor editor = mContext.getSharedPreferences("PREFS",Context.MODE_PRIVATE).edit();
+                editor.putString("profileid",post.getPublisher());
+                editor.apply();
+
+                ( (FragmentActivity)mContext).getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container
+                        ,new ProfileFragment()).commit();
+            }
+        });
+
+
+
     }
 
     @Override
@@ -79,7 +128,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder>{
 
     public class ViewHolder extends RecyclerView.ViewHolder{
 
-        public ImageView image_profile, post_image, bookmark, chat;
+        public ImageView image_profile, post_image, save, chat;
         public TextView username, title, author, price, numOfPages, edition;
 
         public ViewHolder(@NonNull View itemView) {
@@ -87,7 +136,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder>{
 
             image_profile = itemView.findViewById(R.id.image_profile);
             post_image = itemView.findViewById(R.id.post_image);
-            bookmark = itemView.findViewById(R.id.save);
+            save = itemView.findViewById(R.id.save);
             chat = itemView.findViewById(R.id.gotoChat);
             username = itemView.findViewById(R.id.username_p);
             title = itemView.findViewById(R.id.title_p);
@@ -109,6 +158,30 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder>{
                 Glide.with(mContext).load(user.getImageurl()).into(image_profile);
                 username.setText(user.getUsername());
 
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+    }
+
+    private void isSaved(final String postid, final ImageView imageView){
+        final FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
+        DatabaseReference reference = FirebaseDatabase.getInstance().getReference().child("Saves")
+                .child(firebaseUser.getUid());
+        reference.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+               //hata gelirse "postid" olabilir bu kisim
+                if(dataSnapshot.child(postid).exists()){
+                    imageView.setImageResource(R.drawable.ic_bookmark_black);
+                    imageView.setTag("saved");
+                }else{
+                    imageView.setImageResource(R.drawable.ic_ibookmark);
+                    imageView.setTag("save");
+                }
             }
 
             @Override

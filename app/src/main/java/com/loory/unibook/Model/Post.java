@@ -1,7 +1,7 @@
 package com.loory.unibook.Model;
 
 public class Post {
-    private String postId;
+    private String postid;
     private String postimage;
     private String publisher;
     private String title;
@@ -10,8 +10,8 @@ public class Post {
     private String numOfPages;
     private String edition;
 
-    public Post(String postId, String postimage, String publisher, String title, String author, String price, String numOfPages, String edition) {
-        this.postId = postId;
+    public Post(String postid, String postimage, String publisher, String title, String author, String price, String numOfPages, String edition) {
+        this.postid = postid;
         this.postimage = postimage;
         this.publisher = publisher;
         this.title = title;
@@ -24,12 +24,12 @@ public class Post {
     public Post() {
     }
 
-    public String getPostId() {
-        return postId;
+    public String getPostid() {
+        return postid;
     }
 
-    public void setPostId(String postId) {
-        this.postId = postId;
+    public void setPostid(String postid) {
+        this.postid = postid;
     }
 
     public String getPostimage() {
