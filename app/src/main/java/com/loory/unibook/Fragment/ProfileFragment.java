@@ -1,6 +1,7 @@
 package com.loory.unibook.Fragment;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 
@@ -27,6 +28,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.loory.unibook.Adapter.MyPhotoAdapter;
+import com.loory.unibook.EditProfileActivity;
 import com.loory.unibook.Model.Post;
 import com.loory.unibook.Model.User;
 import com.loory.unibook.R;
@@ -101,7 +103,7 @@ public class ProfileFragment extends Fragment {
         edit_profile.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                startActivity(new Intent(getContext(), EditProfileActivity.class));
             }
         });
 
