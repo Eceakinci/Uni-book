@@ -1,5 +1,6 @@
 package com.loory.unibook.Fragment;
 
+import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -8,9 +9,13 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -19,6 +24,7 @@ import com.google.firebase.database.ValueEventListener;
 import com.loory.unibook.Adapter.PostAdapter;
 import com.loory.unibook.Model.Post;
 import com.loory.unibook.R;
+import com.loory.unibook.SignInActivity;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -35,6 +41,7 @@ public class HomeFragment extends Fragment {
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_home,container,false);
         readPosts();
+
         recyclerView = view.findViewById(R.id.recycler_view_home);
         recyclerView.setHasFixedSize(true);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
@@ -74,7 +81,7 @@ public class HomeFragment extends Fragment {
             }
         });
 
-
-
     }
+
+
 }

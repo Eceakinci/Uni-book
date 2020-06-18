@@ -1,6 +1,7 @@
 package com.loory.unibook.Adapter;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -23,6 +24,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.loory.unibook.Fragment.PostDetailFragment;
 import com.loory.unibook.Fragment.ProfileFragment;
+import com.loory.unibook.MessageActivity;
 import com.loory.unibook.Model.Post;
 import com.loory.unibook.Model.User;
 import com.loory.unibook.R;
@@ -117,7 +119,16 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder>{
             }
         });
 
+        holder.chat.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //bu kisim hatali olabilir
 
+            Intent intent = new Intent(mContext, MessageActivity.class);
+            intent.putExtra("userid", firebaseUser.getUid());
+            mContext.startActivity(intent);
+            }
+        });
 
     }
 

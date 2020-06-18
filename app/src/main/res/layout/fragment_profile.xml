@@ -6,44 +6,45 @@
     android:layout_height="match_parent"
     tools:context=".Fragment.ProfileFragment">
 
-  <com.google.android.material.appbar.AppBarLayout
-      android:layout_width="match_parent"
-      android:layout_height="wrap_content"
-      android:background="?android:attr/windowBackground"
-      android:id="@+id/bar">
+    <com.google.android.material.appbar.AppBarLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/bar"
+        android:background="@color/colorToolbar">
 
-      <androidx.appcompat.widget.Toolbar
-          android:layout_width="match_parent"
-          android:layout_height="wrap_content"
-          android:background="?android:attr/windowBackground"
-          android:id="@+id/toolbar">
+        <androidx.appcompat.widget.Toolbar
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/toolbar"
+            android:outlineAmbientShadowColor="@color/colorToolbar">
 
-          <RelativeLayout
-              android:layout_width="match_parent"
-              android:layout_height="wrap_content">
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
 
-              <TextView
-                  android:layout_width="wrap_content"
-                  android:layout_height="wrap_content"
-                  android:textSize="18sp"
-                  android:maxLines="1"
-                  android:textStyle="bold"
-                  android:id="@+id/username_profile"
-                  android:textColor="@color/colorPrimaryDark"/>
+                <ImageView
+                    android:layout_width="180dp"
+                    android:layout_height="35dp"
+                    android:layout_alignParentStart="true"
+                    android:layout_marginStart="-43dp"
+                    android:src="@drawable/unibook_logo" />
 
-              <ImageView
-                  android:layout_width="wrap_content"
-                  android:layout_height="wrap_content"
-                  android:id="@+id/options"
-                  android:src="@drawable/ic_options"
-                  android:layout_alignParentEnd="true"
-                  android:layout_marginEnd="10dp"/>
 
-          </RelativeLayout>
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/options"
+                    android:src="@drawable/ic_options"
+                    android:layout_alignParentEnd="true"
+                    android:layout_marginEnd="10dp"/>
 
-      </androidx.appcompat.widget.Toolbar>
+            </RelativeLayout>
 
-  </com.google.android.material.appbar.AppBarLayout>
+        </androidx.appcompat.widget.Toolbar>
+
+    </com.google.android.material.appbar.AppBarLayout>
+
+
 
     <ScrollView
         android:layout_width="match_parent"
@@ -100,8 +101,17 @@
                     android:maxLines="1"
                     android:id="@+id/fullname"
                     android:textStyle="bold"
+                    android:textSize="18sp"
+                    android:textColor="@color/colorPrimaryDark" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
                     android:textSize="16sp"
-                    android:textColor="@color/colorPrimaryDark"/>
+                    android:maxLines="1"
+                    android:textStyle="bold"
+                    android:id="@+id/username_profile"
+                    android:textColor="@color/colorPrimaryDark" />
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -109,7 +119,8 @@
                     android:layout_marginTop="5dp"
                     android:id="@+id/bio"
                     android:maxLines="5"
-                    android:textColor="@color/colorPrimaryDark"/>
+                    android:textColor="@color/colorPrimaryDark"
+                    android:text="bio"/>
 
             </LinearLayout>
 

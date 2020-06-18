@@ -12,7 +12,6 @@ import android.view.MenuItem;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.loory.unibook.Fragment.HomeFragment;
-import com.loory.unibook.Fragment.NotificationFragment;
 import com.loory.unibook.Fragment.ProfileFragment;
 import com.loory.unibook.Fragment.SearchFragment;
 
@@ -53,10 +52,6 @@ public class MainActivity extends AppCompatActivity {
 
                         case R.id.nav_add:
                             startActivity(new Intent(MainActivity.this, PostActivity.class));
-                            break;
-
-                        case R.id.nav_fav:
-                            selectedFragment = new NotificationFragment();
                             break;
 
                         case R.id.nav_profile:
