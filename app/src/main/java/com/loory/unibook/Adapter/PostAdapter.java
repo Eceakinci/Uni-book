@@ -38,6 +38,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder>{
 
     private FirebaseUser firebaseUser;
 
+
     public PostAdapter(Context context, List<Post> posts) {
         this.mContext = context;
         this.mPost = posts;
@@ -122,10 +123,11 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder>{
         holder.chat.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //bu kisim hatali olabilir
 
-            Intent intent = new Intent(mContext, MessageActivity.class);
-            intent.putExtra("userid", firebaseUser.getUid());
+                final String userId = post.getPublisher();
+
+                Intent intent = new Intent(mContext, MessageActivity.class);
+            intent.putExtra("userid", userId);
             mContext.startActivity(intent);
             }
         });

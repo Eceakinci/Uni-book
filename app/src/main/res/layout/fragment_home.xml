@@ -35,7 +35,15 @@
                     android:src="@drawable/ic_inbox"
                     android:layout_marginRight="10dp"
                     android:id="@+id/inbox"
-                    android:layout_alignParentEnd="true"/>
+                    android:layout_toLeftOf="@+id/out"/>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Out"
+                    android:layout_alignParentEnd="true"
+                    android:id="@+id/out"
+                    android:textSize="50px"
+                    android:layout_marginEnd="10dp"/>
 
             </RelativeLayout>
 

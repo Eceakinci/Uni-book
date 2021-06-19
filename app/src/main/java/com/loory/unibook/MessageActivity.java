@@ -11,7 +11,6 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageButton;
-import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -38,7 +37,7 @@ public class MessageActivity extends AppCompatActivity {
     CircleImageView profile_image;
     TextView username;
     FirebaseUser fUser;
-    DatabaseReference reference;
+    DatabaseReference userReference;
 
     ImageButton btnSend;
     EditText textSend;
@@ -61,6 +60,7 @@ public class MessageActivity extends AppCompatActivity {
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                //Change finish
                 finish();
             }
         });
@@ -77,15 +77,18 @@ public class MessageActivity extends AppCompatActivity {
         textSend = findViewById(R.id.text_send);
 
         intent = getIntent();
-        //userud'li kisimlar id olabilir dikkat et
+
+        fUser  = FirebaseAuth.getInstance().getCurrentUser();
+        //userid'li kisimlar id olabilir dikkat et
         final String userid = intent.getStringExtra("userid");
 
         btnSend.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String mess = textSend.getText().toString();
-                if(!mess.equals("")){
-                    sendMessage(fUser.getUid(),userid,mess);
+                String message = textSend.getText().toString();
+                if(!message.equals("")){
+                    //sender receiver message
+                    sendMessage(fUser.getUid(),userid,message);
                 }else{
                     Toast.makeText(MessageActivity.this,"You can't send empty message",Toast.LENGTH_SHORT).show();
                 }
@@ -93,9 +96,9 @@ public class MessageActivity extends AppCompatActivity {
             }
         });
 
-        fUser = FirebaseAuth.getInstance().getCurrentUser();
-        reference = FirebaseDatabase.getInstance().getReference("Users").child(userid);
-        reference.addValueEventListener(new ValueEventListener() {
+        System.out.println("User id is " + userid);
+        userReference = FirebaseDatabase.getInstance().getReference("Users").child(userid);
+        userReference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 User user = dataSnapshot.getValue(User.class);
@@ -135,15 +138,17 @@ public class MessageActivity extends AppCompatActivity {
 
     private void readMessage(final String myid, final String userid, final String imageurl){
         mChat = new ArrayList<>();
-        reference = FirebaseDatabase.getInstance().getReference("Chats");
-        reference.addValueEventListener(new ValueEventListener() {
+        userReference = FirebaseDatabase.getInstance().getReference("Chats");
+        userReference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 mChat.clear();
                 for(DataSnapshot snapshot: dataSnapshot.getChildren()){
                     Chat chat = snapshot.getValue(Chat.class);
-                    if(chat.getReceiver().equals(myid) &&chat.getSender().equals(userid)
-                        || chat.getReceiver().equals(userid) && chat.getSender().equals(myid)){
+                    if(
+                            chat.getReceiver().equals(myid) &&chat.getSender().equals(userid)
+                        ||
+                                    chat.getReceiver().equals(userid) && chat.getSender().equals(myid)){
                         mChat.add(chat);
                     }
                     messageAdapter = new MessageAdapter(MessageActivity.this, mChat,imageurl);
