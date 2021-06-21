@@ -26,9 +26,20 @@ import com.loory.unibook.Adapter.MessageAdapter;
 import com.loory.unibook.Model.Chat;
 import com.loory.unibook.Model.User;
 
+import java.io.UnsupportedEncodingException;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+
+import javax.crypto.BadPaddingException;
+import javax.crypto.Cipher;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.KeyGenerator;
+import javax.crypto.NoSuchPaddingException;
+import javax.crypto.SecretKey;
+import javax.crypto.spec.SecretKeySpec;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -47,6 +58,14 @@ public class MessageActivity extends AppCompatActivity {
     RecyclerView recyclerView;
 
     Intent intent;
+
+    private String strMessage = "";
+    private byte encryptionKey [] = {-100, 40, 123, -21, 88, 32, 25, 62, -37, 93, -53, 12, 34, 64, 24, 72};
+    private Cipher cipher, decipher;
+    private SecretKeySpec secretKeySpec;
+    //private SecretKey secKey;
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -79,8 +98,29 @@ public class MessageActivity extends AppCompatActivity {
         intent = getIntent();
 
         fUser  = FirebaseAuth.getInstance().getCurrentUser();
-        //userid'li kisimlar id olabilir dikkat et
+
         final String userid = intent.getStringExtra("userid");
+
+
+
+//            try {
+//                cipher = Cipher.getInstance("AES");
+//                decipher = Cipher.getInstance("AES");
+//            } catch (NoSuchPaddingException e) {
+//                e.printStackTrace();
+//            } catch (NoSuchAlgorithmException e) {
+//                e.printStackTrace();
+//            }
+
+//        try {
+//           secKey = getSecretEncryptionKey();
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
+//        secretKeySpec = new SecretKeySpec(secKey.getEncoded(),"AES");
+
+        secretKeySpec = new SecretKeySpec(encryptionKey,"AES");
+
 
         btnSend.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -96,7 +136,6 @@ public class MessageActivity extends AppCompatActivity {
             }
         });
 
-        System.out.println("User id is " + userid);
         userReference = FirebaseDatabase.getInstance().getReference("Users").child(userid);
         userReference.addValueEventListener(new ValueEventListener() {
             @Override
@@ -104,8 +143,6 @@ public class MessageActivity extends AppCompatActivity {
                 User user = dataSnapshot.getValue(User.class);
                 username.setText(user.getUsername());
                 Glide.with(MessageActivity.this).load(user.getImageurl()).into(profile_image);
-
-                //aslinda burada yine default resmi olucak
 
 //                if(user.getImageurl().equals("default")){
 //                    profile_image.setImageResource(R.mipmap.ic_launcher);
@@ -122,13 +159,22 @@ public class MessageActivity extends AppCompatActivity {
             }
         });
     }
-    //database'e uc variable kaydedilecek
-    //send message kismina mesaj yazzdigi urunu de ekleyebilirsin
+
+    public static SecretKey getSecretEncryptionKey() throws Exception{
+        KeyGenerator generator = KeyGenerator.getInstance("AES");
+        generator.init(128); // The AES key size in number of bits
+        SecretKey secKey = generator.generateKey();
+        return secKey;
+    }
+
+
     private void sendMessage(String sender, String receiver, String message){
 
         DatabaseReference reference = FirebaseDatabase.getInstance().getReference();
 
         HashMap<String, Object> hashMap = new HashMap<>();
+        message = AESEncryption(message);
+
         hashMap.put("sender",sender);
         hashMap.put("receiver",receiver);
         hashMap.put("message",message);
@@ -145,10 +191,17 @@ public class MessageActivity extends AppCompatActivity {
                 mChat.clear();
                 for(DataSnapshot snapshot: dataSnapshot.getChildren()){
                     Chat chat = snapshot.getValue(Chat.class);
-                    if(
-                            chat.getReceiver().equals(myid) &&chat.getSender().equals(userid)
-                        ||
-                                    chat.getReceiver().equals(userid) && chat.getSender().equals(myid)){
+                    if(chat.getReceiver().equals(myid) &&chat.getSender().equals(userid)
+                        || chat.getReceiver().equals(userid) && chat.getSender().equals(myid)){
+
+                        try {
+                            strMessage = chat.getMessage();
+                            chat.setMessage(AESDecryption(strMessage));
+                        } catch (UnsupportedEncodingException e) {
+                            e.printStackTrace();
+                        }
+
+
                         mChat.add(chat);
                     }
                     messageAdapter = new MessageAdapter(MessageActivity.this, mChat,imageurl);
@@ -161,5 +214,60 @@ public class MessageActivity extends AppCompatActivity {
 
             }
         });
+    }
+
+    public String AESEncryption(String string){
+        byte [] strByte = string.getBytes();
+        byte [] encryptByte = new byte[strByte.length];
+
+        try{
+            cipher = Cipher.getInstance("AES");
+            cipher.init(Cipher.ENCRYPT_MODE, secretKeySpec);
+            encryptByte = cipher.doFinal(strByte);
+        } catch (BadPaddingException e) {
+            e.printStackTrace();
+        } catch (IllegalBlockSizeException e) {
+            e.printStackTrace();
+        } catch (InvalidKeyException e) {
+            e.printStackTrace();
+        } catch (NoSuchPaddingException e) {
+            e.printStackTrace();
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        }
+
+        String result = "";
+        try {
+            result = new String(encryptByte, "ISO-8859-1");
+
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+        return  result;
+    }
+
+    public String AESDecryption(String string) throws UnsupportedEncodingException {
+        byte [] encryptedByte = string.getBytes("ISO-8859-1");
+        String decryptedByte = string;
+
+        byte [] decryption;
+        try{
+            decipher = Cipher.getInstance("AES");
+            decipher.init(Cipher.DECRYPT_MODE, secretKeySpec);
+            decryption = decipher.doFinal(encryptedByte);
+            decryptedByte = new String(decryption);
+        } catch (BadPaddingException e) {
+            e.printStackTrace();
+        } catch (IllegalBlockSizeException e) {
+            e.printStackTrace();
+        } catch (InvalidKeyException e) {
+            e.printStackTrace();
+        } catch (NoSuchPaddingException e) {
+            e.printStackTrace();
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        }
+
+        return decryptedByte;
     }
 }
