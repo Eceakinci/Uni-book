@@ -23,8 +23,6 @@ I define 128-bit encryption key, cipher, and decipher as global variables. On th
 ## Implementation Link 
 https://github.com/Eceakinci/Uni-book/blob/master/app/src/main/java/com/loory/unibook/MessageActivity.java
 
-## Video Link
-https://youtu.be/Qj34JglajiM
 
 
 
